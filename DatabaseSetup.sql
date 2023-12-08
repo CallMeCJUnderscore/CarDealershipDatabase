@@ -25,8 +25,7 @@ DealershipPhone CHAR(12),
 CHECK (DealershipPhone REGEXP '^[0-9]{3}-[0-9]{3}-[0-9]{4}$'));
 
 CREATE TABLE vehicles(
-InventoryID INT AUTO_INCREMENT PRIMARY KEY,
-VIN INT UNIQUE NOT NULL,
+VIN INT UNIQUE PRIMARY KEY,
 YearOfManufacture INT NOT NULL,
 Make VARCHAR(30) NOT NULL,
 Model VARCHAR(30) NOT NULL,
@@ -34,12 +33,14 @@ Color VARCHAR(10) NOT NULL,
 VehicleType ENUM("Sedan", "SUV", "Pickup Truck", "Station Wagon", "Hatchback", "Minivan", "Other") NOT NULL,
 Odometer INT DEFAULT 0,
 Price DOUBLE NOT NULL,
-SoldStatus SMALLINT DEFAULT 0, -- 0=Unsold, 1=Sold via Sale, 2=Sold via Lease (ADD THIS LATER)
+SoldStatus SMALLINT DEFAULT 0, -- 0=Unsold, 1=Sold via Sale, 2=Sold via Lease
 CHECK (Color REGEXP '^[a-zA-Z]+$'));
 
 CREATE TABLE inventory(
 DealershipID INT NOT NULL,
-VIN INT UNIQUE NOT NULL);
+VIN INT UNIQUE NOT NULL,
+FOREIGN KEY(DealershipID) REFERENCES dealerships(DealershipID),
+FOREIGN KEY(VIN) REFERENCES vehicles(VIN));
 
 CREATE TABLE sales_contracts(
 SaleID INT AUTO_INCREMENT,
@@ -48,6 +49,15 @@ CustomerName VARCHAR(40) NOT NULL,
 CustomerContact VARCHAR(40) NOT NULL,
 VIN INT UNIQUE NOT NULL,
 PRIMARY KEY (SaleID),
+FOREIGN KEY(VIN) REFERENCES vehicles(VIN));
+
+CREATE TABLE lease_contracts(
+LeaseID INT AUTO_INCREMENT,
+SaleDate DATE DEFAULT(CURRENT_DATE),
+CustomerName VARCHAR(40) NOT NULL,
+CustomerContact VARCHAR(40) NOT NULL,
+VIN INT UNIQUE NOT NULL,
+PRIMARY KEY (LeaseID),
 FOREIGN KEY(VIN) REFERENCES vehicles(VIN));
 
 
@@ -83,3 +93,6 @@ VALUES
 
 INSERT INTO sales_contracts (VIN, CustomerName, CustomerContact)
 VALUES (10987, "Dana Wyatt", "dana@texas.com");
+
+INSERT INTO lease_contracts (VIN, CustomerName, CustomerContact)
+VALUES (11000, "Zachary Westly", "zach@texas.com");
