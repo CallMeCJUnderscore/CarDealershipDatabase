@@ -34,7 +34,7 @@ Color VARCHAR(10) NOT NULL,
 VehicleType ENUM("Sedan", "SUV", "Pickup Truck", "Station Wagon", "Hatchback", "Minivan", "Other") NOT NULL,
 Odometer INT DEFAULT 0,
 Price DOUBLE NOT NULL,
-Sold SMALLINT DEFAULT 0, -- 0=Unsold, 1=Sold via Sale, 2=Sold via Lease
+SoldStatus SMALLINT DEFAULT 0, -- 0=Unsold, 1=Sold via Sale, 2=Sold via Lease (ADD THIS LATER)
 CHECK (Color REGEXP '^[a-zA-Z]+$'));
 
 CREATE TABLE inventory(
@@ -43,14 +43,11 @@ VIN INT UNIQUE NOT NULL);
 
 CREATE TABLE sales_contracts(
 SaleID INT AUTO_INCREMENT,
+SaleDate DATE DEFAULT NOW(),
+CustomerName VARCHAR(40) NOT NULL,
+CustomerContact VARCHAR(40) NOT NULL,
 VIN INT UNIQUE NOT NULL,
 PRIMARY KEY (SaleID),
-FOREIGN KEY(VIN) REFERENCES vehicles(VIN));
-
-CREATE TABLE lease_contracts(
-LeaseID INT AUTO_INCREMENT,
-VIN INT UNIQUE NOT NULL,
-PRIMARY KEY (LeaseID),
 FOREIGN KEY(VIN) REFERENCES vehicles(VIN));
 
 
@@ -71,9 +68,9 @@ VALUES
 (10987, 2017, "Ford", "Escape", "SUV", "White", 25000, 20995),
 (11000, 2018, "Chevrolet", "Malibu", "Sedan", "Red", 12000, 16995),
 (11111, 2019, "Toyota", "RAV4", "SUV", "Blue", 10000, 27995);
-UPDATE vehicles SET Sold = 1
+UPDATE vehicles SET SoldStatus = 1
 WHERE VIN = 10987;
-UPDATE vehicles SET Sold = 2
+UPDATE vehicles SET SoldStatus = 2
 WHERE VIN = 11000;
 
 INSERT INTO inventory
@@ -84,8 +81,5 @@ VALUES
 (2, 11000),
 (2, 11111);
 
-INSERT INTO sales_contracts (VIN)
-VALUES (10987);
-
-INSERT INTO lease_contracts (VIN)
-VALUES (11000);
+INSERT INTO sales_contracts (VIN, CustomerName, CustomerContact)
+VALUES (10987, "Dana Wyatt", "dana@texas.com");
